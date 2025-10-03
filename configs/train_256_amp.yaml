@@ -1,0 +1,42 @@
+# 針對 3090 的保守設定
+seed: 34021
+image_size: 256
+batch_size: 6 # 若顯存吃緊可降至 4
+grad_accum_steps: 2
+num_workers: 4
+max_epochs: 10 # 先小跑驗證流程
+save_every: 1
+val_every: 1
+
+
+# 路徑
+train_pairs_csv: data/train_pairs.csv
+val_pairs_csv: data/val_pairs.csv
+weights:
+simswap_pretrained: weights/simswap_256.pth
+arcface: weights/arcface_r100.onnx
+
+
+# 優化
+optimizer:
+type: Adam
+lr: 2.0e-4
+betas: [0.5, 0.999]
+
+
+# 損失（可視需求微調）
+loss:
+id_coef: 1.0 # ArcFace identity
+rec_coef: 10.0 # L1 reconstruction on face region
+perc_coef: 0.2 # Perceptual loss（可選）
+
+
+# AMP 混合精度
+amp: true
+
+
+# 凍結策略（小模型微調）
+freeze:
+generator: true # 保持 G 固定（先）
+encoder_partial: true # 只解凍 encoder 後幾層
+id_module: true # 先固定身份模組，穩定再開
